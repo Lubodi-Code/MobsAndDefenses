@@ -1,0 +1,5 @@
+main: com.demo.MobsAndDefenses
+version: 1.0.0-SNAPSHOT
+name: MobsAndDefenses
+author: Luboi
+api-version: 1.20
