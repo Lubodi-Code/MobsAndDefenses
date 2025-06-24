@@ -78,3 +78,7 @@ configuracion:
   mostrar_particulas: true
   reproducir_sonido: true
   distancia_deteccion: 1.5
+
+construccion:
+  material: DIRT
+  rango: 5.0
