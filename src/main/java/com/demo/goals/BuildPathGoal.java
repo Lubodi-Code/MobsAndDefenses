@@ -43,7 +43,8 @@ public class BuildPathGoal extends Goal {
         Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
 
         double heightDiff = targetLoc.getY() - mobLoc.getY();
-        if (heightDiff > 1.5 && heightDiff < maxBuildHeight) {
+        // Allow unlimited vertical building when maxBuildHeight is zero or negative
+        if (heightDiff > 1.5 && (maxBuildHeight <= 0 || heightDiff < maxBuildHeight)) {
             return true;
         }
 
