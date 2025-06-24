@@ -65,6 +65,9 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
         if (mob.getTarget() == null) { // Updated method name
             return false;
         }
+        if (isTargetUnreachable()) {
+            return false; // let BuildPathGoal handle vertical obstacles
+        }
         Location loc = bukkit.getLocation();
         Vector dir = loc.getDirection().setY(0).normalize();
         Block block = loc.add(dir.multiply(distance)).getBlock();
@@ -128,6 +131,15 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
         }
         targetBlock = null;
         progress = 0;
+    }
+
+    private boolean isTargetUnreachable() {
+        if (mob.getTarget() == null) {
+            return false;
+        }
+        Location mobLoc = mob.getBukkitEntity().getLocation();
+        Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
+        return targetLoc.getY() - mobLoc.getY() > 1.5;
     }
 
     // Allowed mobs list

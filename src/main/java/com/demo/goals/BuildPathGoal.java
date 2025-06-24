@@ -22,6 +22,7 @@ public class BuildPathGoal extends Goal {
     private final double buildRange;
     private Block targetBlock;
     private int buildCooldown;
+    private int buildHeight; // Track progressive vertical building
 
     public BuildPathGoal(Mob mob, Material buildMaterial, int maxBuildHeight, double buildRange) {
         this.mob = mob;
@@ -46,16 +47,33 @@ public class BuildPathGoal extends Goal {
         Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
 
         double heightDiff = targetLoc.getY() - mobLoc.getY();
-        // Allow unlimited vertical building when maxBuildHeight is zero or negative
-        if (heightDiff > 1.5 && (maxBuildHeight <= 0 || heightDiff < maxBuildHeight)) {
-            return true;
+
+        boolean isTooHigh = heightDiff > 1.5 &&
+                (maxBuildHeight <= 0 || heightDiff <= maxBuildHeight);
+
+        boolean hasVerticalObstacle = false;
+        if (isTooHigh) {
+            for (double y = 1; y <= Math.min(heightDiff,
+                    maxBuildHeight > 0 ? maxBuildHeight : 10); y++) {
+                Location checkLoc = mobLoc.clone().add(0, y, 0);
+                Block block = checkLoc.getBlock();
+                if (block.getType().isSolid() && !block.isLiquid()) {
+                    hasVerticalObstacle = true;
+                    break;
+                }
+            }
         }
 
+        return isTooHigh || hasVerticalObstacle || hasHorizontalObstacle();
+    }
+
+    private boolean hasHorizontalObstacle() {
+        Location mobLoc = mob.getBukkitEntity().getLocation();
+        Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
         Vector direction = targetLoc.toVector().subtract(mobLoc.toVector());
         double distance = direction.length();
-        if (distance > buildRange) {
-            return false;
-        }
+
+        if (distance > buildRange) return false;
 
         direction.normalize();
         for (double d = 1; d < Math.min(distance, buildRange); d += 0.5) {
@@ -71,6 +89,7 @@ public class BuildPathGoal extends Goal {
     @Override
     public void start() {
         buildCooldown = 0;
+        buildHeight = 0; // reset build height
         selectBuildLocation();
     }
 
@@ -78,31 +97,49 @@ public class BuildPathGoal extends Goal {
         Location mobLoc = mob.getBukkitEntity().getLocation();
         Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
         Vector direction = targetLoc.toVector().subtract(mobLoc.toVector()).normalize();
+        double heightDiff = targetLoc.getY() - mobLoc.getY();
 
+        // Priority 1: build under mob if standing mid-air
         Block underMob = mobLoc.clone().subtract(0, 1, 0).getBlock();
         if (underMob.getType().isAir()) {
             targetBlock = underMob;
             return;
         }
 
+        // Priority 2: build upwards if target is high
+        if (heightDiff > 1.5 && buildHeight < (maxBuildHeight > 0 ? maxBuildHeight : 10)) {
+            Block stepBlock = mobLoc.clone().add(direction).add(0, buildHeight, 0).getBlock();
+            if (stepBlock.getType().isAir()) {
+                targetBlock = stepBlock;
+                buildHeight++;
+                return;
+            }
+
+            Block above = mobLoc.clone().add(0, 1 + buildHeight, 0).getBlock();
+            if (above.getType().isAir()) {
+                targetBlock = above;
+                buildHeight++;
+                return;
+            }
+        }
+
+        // Priority 3: build in front
         Block frontBlock = mobLoc.clone().add(direction).getBlock();
         if (frontBlock.getType().isAir()) {
             targetBlock = frontBlock;
             return;
         }
 
+        // Priority 4: place ladder on wall
         for (BlockFace face : new BlockFace[]{BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST}) {
-            Block relative = frontBlock.getRelative(face);
-            if (relative.getType().isSolid()) {
-                targetBlock = frontBlock;
-                return;
+            Block wall = frontBlock.getRelative(face);
+            if (wall.getType().isSolid()) {
+                Block ladderPos = frontBlock.getRelative(face.getOppositeFace());
+                if (ladderPos.getType().isAir()) {
+                    targetBlock = ladderPos;
+                    return;
+                }
             }
-        }
-
-        Block above = mobLoc.clone().add(0, 1, 0).getBlock();
-        if (above.getType().isAir()) {
-            targetBlock = above;
-            return;
         }
 
         targetBlock = null;
