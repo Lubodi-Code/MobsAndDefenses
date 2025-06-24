@@ -1,0 +1,80 @@
+# Configuración de bloques y tiempos para el plugin MobBreakBlocks
+
+# MOBS PERMITIDOS (hardcodeados en el plugin):
+# ✅ Zombie (básico)
+# ✅ Husk (zombie del desierto)
+# ✅ Drowned (solo sin tridente)
+# ✅ ZombieVillager (aldeano zombie)
+# ✅ Enderman (ya puede mover bloques naturalmente)
+# ✅ IronGolem (golem de hierro)
+# ✅ Ravager (bestia del raid)
+# ✅ Hoglin (bestia del nether)
+# ✅ ZombifiedPiglin (piglin zombificado)
+# ✅ Warden (super fuerte)
+# ✅ Giant (si está disponible)
+# ✅ Piglin (solo sin ballesta)
+# ✅ PiglinBrute (siempre melee)
+#
+# MOBS EXCLUIDOS (no tiene sentido conceptual):
+# ❌ Skeleton, Stray, WitherSkeleton (arqueros)
+# ❌ Creeper (explota, no necesita romper)
+# ❌ Ghast (vuela y dispara)
+# ❌ Blaze (vuela y dispara)
+# ❌ Pillager, Vindicator, Evoker (humanoides inteligentes)
+# ❌ Witch (lanza pociones)
+# ❌ Spider, CaveSpider (muy pequeños)
+# ❌ Endermite, Silverfish (muy pequeños)
+# ❌ Slime, MagmaCube (gelatinosos)
+# ❌ Phantom (vuela)
+# ❌ Shulker (dispara proyectiles)
+
+bloques:
+  suaves:
+    - DIRT
+    - GRASS_BLOCK
+    - SAND
+    - GRAVEL
+    - SNOW_BLOCK
+    - CLAY
+    - COARSE_DIRT
+    - PODZOL
+    - MYCELIUM
+    - SOUL_SAND
+    - SOUL_SOIL
+    - MUD
+    - MUDDY_MANGROVE_ROOTS
+    - ROOTED_DIRT
+    - MOSS_BLOCK
+
+  duros:
+    - STONE
+    - COBBLESTONE
+    - DEEPSLATE
+    - COBBLED_DEEPSLATE
+    - ANDESITE
+    - GRANITE
+    - DIORITE
+    - CALCITE
+    - TUFF
+    - DRIPSTONE_BLOCK
+    - SANDSTONE
+    - RED_SANDSTONE
+    - BRICKS
+    - STONE_BRICKS
+    - DEEPSLATE_BRICKS
+    - POLISHED_DEEPSLATE
+    - BLACKSTONE
+    - POLISHED_BLACKSTONE
+    - NETHERRACK
+    - BASALT
+    - SMOOTH_BASALT
+    - END_STONE
+
+tiempos:
+  suave: 2.0
+  duro: 5.0
+
+configuracion:
+  mostrar_particulas: true
+  reproducir_sonido: true
+  distancia_deteccion: 1.5
