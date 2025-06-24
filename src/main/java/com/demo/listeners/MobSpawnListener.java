@@ -1,6 +1,7 @@
 package com.demo.listeners;
 
 import com.demo.goals.BreakBlockGoal;
+import com.demo.goals.BuildPathGoal;
 import com.demo.managers.ConfigManager;
 
 import net.minecraft.world.entity.PathfinderMob;
@@ -37,7 +38,13 @@ public class MobSpawnListener implements Listener {
             PathfinderMob nms = (PathfinderMob) craftEntity.getHandle();
             
             nms.goalSelector.addGoal(3, new BreakBlockGoal(nms, config));
-            Bukkit.getLogger().info("Added break block goal to: " + entity.getType());
+            nms.goalSelector.addGoal(4, new BuildPathGoal(
+                    nms,
+                    config.getBuildMaterial(),
+                    config.getMaxBuildHeight(),
+                    config.getBuildRange()
+            ));
+            Bukkit.getLogger().info("Added break and build goals to: " + entity.getType());
         } catch (Exception e) {
             Bukkit.getLogger().warning("Failed to add goal to " + entity.getType() + ": " + e.getMessage());
         }
