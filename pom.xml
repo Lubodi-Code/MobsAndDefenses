@@ -1,21 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-            xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://www.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.demo</groupId>
     <artifactId>MobsAndDefenses</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    
+
     <name>MobsAndDefenses</name>
     <url>http://www.example.com</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+        <!-- Compila contra Java 21 -->
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.google.errorprone</groupId>
+                <artifactId>error_prone_annotations</artifactId>
+                <version>2.28.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <repositories>
         <repository>
@@ -25,15 +36,18 @@
     </repositories>
 
     <dependencies>
+        <!-- Dependencia a Spigot Server remapeado con Mojang mappings -->
         <dependency>
             <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.20.4-R0.1-SNAPSHOT</version>
+            <artifactId>spigot-server</artifactId>
+            <version>1.21.6-R0.1-SNAPSHOT</version>
+            <classifier>remapped-mojang</classifier>
             <scope>provided</scope>
         </dependency>
     </dependencies>
 
     <build>
+        <!-- Carpeta de código fuente -->
         <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
         <resources>
             <resource>
@@ -44,4 +58,5 @@
             </resource>
         </resources>
     </build>
+
 </project>

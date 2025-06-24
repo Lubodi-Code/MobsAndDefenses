@@ -1,15 +1,14 @@
 package com.demo.goals;
 
 import com.demo.managers.ConfigManager;
-import net.minecraft.world.entity.EntityCreature;
-import net.minecraft.world.entity.ai.goal.PathfinderGoal;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_20_R3.entity.CraftLivingEntity;
 import org.bukkit.entity.*;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
+import org.bukkit.FluidCollisionMode;
 
 import java.util.*;
 
