@@ -80,7 +80,7 @@ configuracion:
   distancia_deteccion: 1.5
 
 construccion:
-  material: DIRT
+  material: DIRT  # O usar 'LADDER' para escaleras
   # Set max_altura to 0 or a negative value to allow unlimited building height
-  max_altura: 5
-  rango: 5.0
+  max_altura: 8
+  rango: 7.0
