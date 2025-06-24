@@ -1,19 +1,38 @@
 package com.demo.goals;
 
-import com.demo.managers.ConfigManager;
+import java.util.Arrays;
+import java.util.HashMap; // Updated import
+import java.util.HashSet; // Updated import
+import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
-import org.bukkit.entity.*;
-import org.bukkit.util.RayTraceResult;
+import org.bukkit.entity.Drowned;
+import org.bukkit.entity.Enderman;
+import org.bukkit.entity.Giant;
+import org.bukkit.entity.Hoglin;
+import org.bukkit.entity.Husk;
+import org.bukkit.entity.IronGolem;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Piglin;
+import org.bukkit.entity.PiglinBrute;
+import org.bukkit.entity.Ravager;
+import org.bukkit.entity.Warden;
+import org.bukkit.entity.Zoglin;
+import org.bukkit.entity.Zombie;
+import org.bukkit.entity.ZombieVillager;
 import org.bukkit.util.Vector;
-import org.bukkit.FluidCollisionMode;
 
-import java.util.*;
+import com.demo.managers.ConfigManager;
 
-public class BreakBlockGoal extends PathfinderGoal {
-    private final EntityCreature mob;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+
+public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
+    private final Mob mob; // Changed from EntityCreature
     private final Set<Material> soft;
     private final Set<Material> hard;
     private final long ticksSoft;
@@ -24,7 +43,7 @@ public class BreakBlockGoal extends PathfinderGoal {
     private int progress;
     private static final Map<Block, Integer> progressMap = new HashMap<>();
 
-    public BreakBlockGoal(EntityCreature mob, ConfigManager config) {
+    public BreakBlockGoal(Mob mob, ConfigManager config) { // Changed parameter type
         this.mob = mob;
         this.soft = config.getSoftBlocks();
         this.hard = config.getHardBlocks();
@@ -43,7 +62,7 @@ public class BreakBlockGoal extends PathfinderGoal {
         if (!isAllowedMob(living)) {
             return false;
         }
-        if (mob.getGoalTarget() == null) {
+        if (mob.getTarget() == null) { // Updated method name
             return false;
         }
         Location loc = bukkit.getLocation();
@@ -63,7 +82,7 @@ public class BreakBlockGoal extends PathfinderGoal {
     public boolean canContinueToUse() {
         return targetBlock != null &&
                 targetBlock.getType() != Material.AIR &&
-                mob.getGoalTarget() != null &&
+                mob.getTarget() != null && // Updated method name
                 targetBlock.getType().isSolid();
     }
 
@@ -74,13 +93,13 @@ public class BreakBlockGoal extends PathfinderGoal {
 
     @Override
     public void tick() {
-        if (targetBlock == null || targetBlock.getType() == Material.AIR || mob.getGoalTarget() == null) {
+        if (targetBlock == null || targetBlock.getType() == Material.AIR || mob.getTarget() == null) {
             cleanup();
             return;
         }
         if (showParticles) {
             mob.getBukkitEntity().getWorld().spawnParticle(
-                    Particle.BLOCK_CRACK,
+                    Particle.BLOCK, // Updated particle type
                     targetBlock.getLocation().add(0.5, 0.5, 0.5),
                     3, 0.3, 0.3, 0.3,
                     targetBlock.getBlockData()
@@ -121,7 +140,7 @@ public class BreakBlockGoal extends PathfinderGoal {
             IronGolem.class,
             Ravager.class,
             Hoglin.class,
-            ZombifiedPiglin.class,
+            Zoglin.class, // Replaced ZombifiedPiglin
             Warden.class,
             Giant.class,
             Piglin.class,

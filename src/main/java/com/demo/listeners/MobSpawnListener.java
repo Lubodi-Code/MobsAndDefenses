@@ -3,9 +3,10 @@ package com.demo.listeners;
 import com.demo.goals.BreakBlockGoal;
 import com.demo.managers.ConfigManager;
 
+import net.minecraft.world.entity.PathfinderMob;
 
 import org.bukkit.Bukkit;
-
+import org.bukkit.craftbukkit.v1_21_R5.entity.CraftLivingEntity;
 import org.bukkit.entity.Creeper;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
