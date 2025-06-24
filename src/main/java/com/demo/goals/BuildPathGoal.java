@@ -33,9 +33,12 @@ public class BuildPathGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        return mob.getTarget() != null
-                && mob.getNavigation().createPath(mob.getTarget(), 0) == null
-                && isTargetUnreachable();
+        // Older server versions used a PathNavigation#createPath method with a
+        // different return type, which can trigger a NoSuchMethodError when
+        // running this plugin across versions. To keep compatibility we avoid
+        // calling that method and simply check for a target and that the target
+        // appears unreachable.
+        return mob.getTarget() != null && isTargetUnreachable();
     }
 
     private boolean isTargetUnreachable() {
