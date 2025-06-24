@@ -16,7 +16,6 @@ public class ConfigManager {
     private boolean showParticles;
     private double detectionDistance;
     private Material buildMaterial;
-    private int maxBuildHeight;
     private double buildRange;
 
     public ConfigManager(JavaPlugin plugin) {
@@ -39,7 +38,6 @@ public class ConfigManager {
         showParticles = cfg.getBoolean("configuracion.mostrar_particulas", true);
         detectionDistance = cfg.getDouble("configuracion.distancia_deteccion", 1.5);
         buildMaterial = Material.valueOf(cfg.getString("construccion.material", "DIRT").toUpperCase());
-        maxBuildHeight = cfg.getInt("construccion.max_altura", 5);
         buildRange = cfg.getDouble("construccion.rango", 5.0);
     }
 
@@ -69,10 +67,6 @@ public class ConfigManager {
 
     public Material getBuildMaterial() {
         return buildMaterial;
-    }
-
-    public int getMaxBuildHeight() {
-        return maxBuildHeight;
     }
 
     public double getBuildRange() {

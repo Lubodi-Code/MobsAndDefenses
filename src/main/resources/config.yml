@@ -81,5 +81,4 @@ configuracion:
 
 construccion:
   material: DIRT
-  max_altura: 5
   rango: 5.0

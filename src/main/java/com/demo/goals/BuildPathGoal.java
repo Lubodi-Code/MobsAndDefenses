@@ -18,15 +18,13 @@ import java.util.EnumSet;
 public class BuildPathGoal extends Goal {
     private final Mob mob;
     private final Material buildMaterial;
-    private final int maxBuildHeight;
     private final double buildRange;
     private Block targetBlock;
     private int buildCooldown;
 
-    public BuildPathGoal(Mob mob, Material buildMaterial, int maxBuildHeight, double buildRange) {
+    public BuildPathGoal(Mob mob, Material buildMaterial, double buildRange) {
         this.mob = mob;
         this.buildMaterial = buildMaterial;
-        this.maxBuildHeight = maxBuildHeight;
         this.buildRange = buildRange;
         this.setFlags(EnumSet.of(Flag.MOVE));
     }
@@ -43,7 +41,7 @@ public class BuildPathGoal extends Goal {
         Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
 
         double heightDiff = targetLoc.getY() - mobLoc.getY();
-        if (heightDiff > 1.5 && heightDiff < maxBuildHeight) {
+        if (heightDiff > 1.5) {
             return true;
         }
 

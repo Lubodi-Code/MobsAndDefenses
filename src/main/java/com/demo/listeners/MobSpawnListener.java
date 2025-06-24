@@ -41,7 +41,6 @@ public class MobSpawnListener implements Listener {
             nms.goalSelector.addGoal(4, new BuildPathGoal(
                     nms,
                     config.getBuildMaterial(),
-                    config.getMaxBuildHeight(),
                     config.getBuildRange()
             ));
             Bukkit.getLogger().info("Added break and build goals to: " + entity.getType());
