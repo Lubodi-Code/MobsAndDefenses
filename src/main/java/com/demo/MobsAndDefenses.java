@@ -2,7 +2,7 @@ package com.demo;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.demo.listeners.MobSpawnListener;
+import com.demo.mobs.Zombie.ZombieSpawnHandler;
 import com.demo.managers.ConfigManager;
 import com.demo.managers.DifficultyManager;
 import com.demo.managers.PluginManager;
@@ -16,9 +16,11 @@ public class MobsAndDefenses extends JavaPlugin {
         ConfigManager configManager = PluginManager.getInstance().getConfigManager();
         DifficultyManager difficultyManager = PluginManager.getInstance().getDifficultyManager();
 
-        // Register listeners
-        getServer().getPluginManager().registerEvents(new MobSpawnListener(configManager), this);
-        //comand registration
+        // Register mob spawn handlers based on configuration
+        if (difficultyManager.getMobConfig("zombie") != null) {
+            new ZombieSpawnHandler(this, configManager, difficultyManager).register();
+        }
+        // command registration
      
 
         getLogger().info("MobBreakBlocks has been enabled!");
