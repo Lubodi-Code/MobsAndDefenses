@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Difficulty;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -14,6 +15,23 @@ public class DifficultyManager {
     private FileConfiguration config;
     private File file;
     private final Map<String, FileConfiguration> mobConfigs = new HashMap<>();
+
+    /**
+     * Obtiene la dificultad actual del servidor y la mapea a la clave
+     * utilizada en los archivos YML de configuración.
+     *
+     * @return "facil", "normal" o "dificil" dependiendo de la dificultad
+     *         configurada en el servidor.
+     */
+    public String getDifficultyKey() {
+        Difficulty diff = plugin.getServer().getDifficulty();
+        return switch (diff) {
+            case EASY -> "facil";
+            case NORMAL -> "normal";
+            case HARD -> "dificil";
+            default -> "facil"; // PEACEFUL u otros valores
+        };
+    }
 
     public DifficultyManager(JavaPlugin plugin) {
         this.plugin = plugin;
