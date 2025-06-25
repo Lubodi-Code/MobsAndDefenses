@@ -3,6 +3,7 @@ package com.demo;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.demo.listeners.MobSpawnListener;
+import com.demo.listeners.ArrowImpactListener;
 import com.demo.managers.ConfigManager;
 import com.demo.managers.DifficultyManager;
 import com.demo.managers.PluginManager;
@@ -17,7 +18,9 @@ public class MobsAndDefenses extends JavaPlugin {
         DifficultyManager difficultyManager = PluginManager.getInstance().getDifficultyManager();
 
         // Register listeners
-        getServer().getPluginManager().registerEvents(new MobSpawnListener(configManager), this);
+        getServer().getPluginManager().registerEvents(
+                new MobSpawnListener(configManager, difficultyManager), this);
+        getServer().getPluginManager().registerEvents(new ArrowImpactListener(), this);
         //comand registration
      
 
