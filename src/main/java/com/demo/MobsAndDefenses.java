@@ -6,6 +6,7 @@ import com.demo.managers.ConfigManager;
 import com.demo.managers.DifficultyManager;
 import com.demo.managers.PluginManager;
 import com.demo.mobs.Zombie.ZombieSpawnHandler;
+import com.demo.listeners.SunImmunityListener;
 
 public class MobsAndDefenses extends JavaPlugin {
 
@@ -22,6 +23,8 @@ public class MobsAndDefenses extends JavaPlugin {
         if (diffManager.getMobConfig("zombie") != null) {
             new ZombieSpawnHandler(this, configManager, diffManager).register();
         }
+        // Register sunlight immunity listener
+        getServer().getPluginManager().registerEvents(new SunImmunityListener(diffManager), this);
         // command registration
 
 
