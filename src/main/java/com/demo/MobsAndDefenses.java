@@ -1,9 +1,10 @@
 package com.demo;
 
+import org.bukkit.plugin.java.JavaPlugin;
+
 import com.demo.listeners.MobSpawnListener;
 import com.demo.managers.ConfigManager;
 import com.demo.managers.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class MobsAndDefenses extends JavaPlugin {
 
@@ -15,6 +16,8 @@ public class MobsAndDefenses extends JavaPlugin {
 
         // Register listeners
         getServer().getPluginManager().registerEvents(new MobSpawnListener(configManager), this);
+        //comand registration
+     
 
         getLogger().info("MobBreakBlocks has been enabled!");
     }

@@ -1,11 +1,12 @@
 package com.demo.goals;
 
 import java.util.Arrays;
-import java.util.HashMap; // Updated import
-import java.util.HashSet; // Updated import
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -31,8 +32,8 @@ import com.demo.managers.ConfigManager;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 
-public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
-    private final Mob mob; // Changed from EntityCreature
+public class BreakBlockGoal extends Goal {
+    private final Mob mob;
     private final Set<Material> soft;
     private final Set<Material> hard;
     private final long ticksSoft;
@@ -41,9 +42,23 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
     private final double distance;
     private Block targetBlock;
     private int progress;
-    private static final Map<Block, Integer> progressMap = new HashMap<>();
+    private boolean debugMode = true;
+    private String lastDebugMessage = "";
+    
+    // Estados para debugging
+    private enum BreakState {
+        WAITING_FOR_TARGET,
+        CHECKING_CONDITIONS,
+        BREAKING,
+        COMPLETED,
+        FAILED
+    }
+    
+    private BreakState currentState = BreakState.WAITING_FOR_TARGET;
+    
+    private static final Map<Block, Integer> progressMap = new ConcurrentHashMap<>();
 
-    public BreakBlockGoal(Mob mob, ConfigManager config) { // Changed parameter type
+    public BreakBlockGoal(Mob mob, ConfigManager config) {
         this.mob = mob;
         this.soft = config.getSoftBlocks();
         this.hard = config.getHardBlocks();
@@ -51,68 +66,120 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
         this.ticksHard = (long) (config.getHardTime() * 20);
         this.showParticles = config.isShowParticles();
         this.distance = config.getDetectionDistance();
+        
+        debug("BreakBlockGoal initialized for " + mob.getBukkitEntity().getType());
+        debug("Soft blocks: " + soft.size() + ", Hard blocks: " + hard.size());
+        debug("Break times - Soft: " + ticksSoft + " ticks, Hard: " + ticksHard + " ticks");
     }
 
     @Override
     public boolean canUse() {
+        setState(BreakState.CHECKING_CONDITIONS);
+        
         org.bukkit.entity.Entity bukkit = mob.getBukkitEntity();
         if (!(bukkit instanceof LivingEntity living)) {
+            debug("Entity is not LivingEntity");
             return false;
         }
+        
         if (!isAllowedMob(living)) {
+            debug("Mob type not allowed: " + living.getType());
             return false;
         }
-        if (mob.getTarget() == null) { // Updated method name
+        
+        if (mob.getTarget() == null) {
+            setState(BreakState.WAITING_FOR_TARGET);
+            debug("No target found");
             return false;
         }
-        if (isTargetUnreachable()) {
-            return false; // let BuildPathGoal handle vertical obstacles
+        
+        debug("Target found: " + mob.getTarget().getBukkitEntity().getType());
+        
+        // CAMBIO CRÍTICO: Solo romper bloques si NO son obstáculos verticales
+        // Dejar que BuildPathGoal maneje obstáculos verticales
+        if (isTargetUnreachableVertically()) {
+            debug("Target unreachable vertically, letting BuildPathGoal handle it");
+            return false;
         }
+        
         Location loc = bukkit.getLocation();
         Vector dir = loc.getDirection().setY(0).normalize();
         Block block = loc.add(dir.multiply(distance)).getBlock();
+        
+        debug("Checking block at " + block.getLocation() + ": " + block.getType());
+        
         if (!block.getType().isSolid() || block.getType() == Material.AIR) {
+            debug("Block is not solid or is air");
             return false;
         }
+        
         if (!soft.contains(block.getType()) && !hard.contains(block.getType())) {
+            debug("Block type not configured for breaking: " + block.getType());
             return false;
         }
+        
         targetBlock = block;
+        debug("Target block selected for breaking: " + block.getType() + 
+              " at " + block.getLocation());
         return true;
     }
 
     @Override
     public boolean canContinueToUse() {
-        return targetBlock != null &&
-                targetBlock.getType() != Material.AIR &&
-                mob.getTarget() != null && // Updated method name
-                targetBlock.getType().isSolid();
+        boolean hasTarget = mob.getTarget() != null;
+        boolean blockExists = targetBlock != null && targetBlock.getType() != Material.AIR;
+        boolean blockSolid = targetBlock != null && targetBlock.getType().isSolid();
+        
+        boolean result = hasTarget && blockExists && blockSolid;
+        
+        if (!result) {
+            debug("Stopping BreakBlockGoal - hasTarget: " + hasTarget + 
+                  ", blockExists: " + blockExists + ", blockSolid: " + blockSolid);
+        }
+        
+        return result;
     }
 
     @Override
     public void start() {
         progress = progressMap.getOrDefault(targetBlock, 0);
+        setState(BreakState.BREAKING);
+        debug("Started breaking " + targetBlock.getType() + 
+              " (existing progress: " + progress + ")");
     }
 
     @Override
     public void tick() {
         if (targetBlock == null || targetBlock.getType() == Material.AIR || mob.getTarget() == null) {
+            setState(BreakState.FAILED);
             cleanup();
             return;
         }
+
         if (showParticles) {
             mob.getBukkitEntity().getWorld().spawnParticle(
-                    Particle.BLOCK, // Updated particle type
+                    Particle.BLOCK,
                     targetBlock.getLocation().add(0.5, 0.5, 0.5),
                     3, 0.3, 0.3, 0.3,
                     targetBlock.getBlockData()
             );
         }
+
         boolean isSoft = soft.contains(targetBlock.getType());
         long threshold = isSoft ? ticksSoft : ticksHard;
+        
         progress++;
         progressMap.put(targetBlock, progress);
+        
+        // Debug cada 20 ticks (1 segundo)
+        if (progress % 20 == 0) {
+            debug("Breaking progress: " + progress + "/" + threshold + 
+                  " (" + String.format("%.1f", (progress * 100.0 / threshold)) + "%)");
+        }
+        
         if (progress >= threshold) {
+            setState(BreakState.COMPLETED);
+            debug("Block broken successfully: " + targetBlock.getType());
             targetBlock.breakNaturally();
             progressMap.remove(targetBlock);
             targetBlock = null;
@@ -122,6 +189,7 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
 
     @Override
     public void stop() {
+        debug("BreakBlockGoal stopped (progress: " + progress + ")");
         cleanup();
     }
 
@@ -131,18 +199,27 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
         }
         targetBlock = null;
         progress = 0;
+        setState(BreakState.WAITING_FOR_TARGET);
     }
 
-    private boolean isTargetUnreachable() {
+    private boolean isTargetUnreachableVertically() {
         if (mob.getTarget() == null) {
             return false;
         }
         Location mobLoc = mob.getBukkitEntity().getLocation();
         Location targetLoc = mob.getTarget().getBukkitEntity().getLocation();
-        return targetLoc.getY() - mobLoc.getY() > 1.5;
+        double heightDiff = targetLoc.getY() - mobLoc.getY();
+        
+        boolean isUnreachable = heightDiff > 1.5;
+        if (isUnreachable) {
+            debug("Target is vertically unreachable (height diff: " + 
+                  String.format("%.2f", heightDiff) + ")");
+        }
+        
+        return isUnreachable;
     }
 
-    // Allowed mobs list
+    // Lista de mobs permitidos
     private static final Set<Class<? extends LivingEntity>> ALLOWED = new HashSet<>(Arrays.asList(
             Zombie.class,
             Husk.class,
@@ -152,7 +229,7 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
             IronGolem.class,
             Ravager.class,
             Hoglin.class,
-            Zoglin.class, // Replaced ZombifiedPiglin
+            Zoglin.class,
             Warden.class,
             Giant.class,
             Piglin.class,
@@ -162,15 +239,43 @@ public class BreakBlockGoal extends Goal { // Changed from PathfinderGoal
     public static boolean isAllowedMob(LivingEntity entity) {
         for (Class<? extends LivingEntity> clazz : ALLOWED) {
             if (clazz.isInstance(entity)) {
-                if (entity instanceof Drowned drowned && drowned.getEquipment().getItemInMainHand().getType() == Material.TRIDENT) {
+                if (entity instanceof Drowned drowned && 
+                    drowned.getEquipment().getItemInMainHand().getType() == Material.TRIDENT) {
                     return false;
                 }
-                if (entity instanceof Piglin piglin && piglin.getEquipment().getItemInMainHand().getType() == Material.CROSSBOW) {
+                if (entity instanceof Piglin piglin && 
+                    piglin.getEquipment().getItemInMainHand().getType() == Material.CROSSBOW) {
                     return false;
                 }
                 return true;
             }
         }
         return false;
+    }
+
+    // Métodos de debug
+    private void debug(String message) {
+        if (debugMode && !message.equals(lastDebugMessage)) {
+            Bukkit.getLogger().info("[BreakBlockGoal] " + 
+                                  mob.getBukkitEntity().getType() + 
+                                  " (" + mob.getBukkitEntity().getEntityId() + "): " + 
+                                  message);
+            lastDebugMessage = message;
+        }
+    }
+
+    private void setState(BreakState newState) {
+        if (currentState != newState) {
+            debug("State changed: " + currentState + " -> " + newState);
+            currentState = newState;
+        }
+    }
+
+    public void setDebugMode(boolean debug) {
+        this.debugMode = debug;
+    }
+
+    public BreakState getCurrentState() {
+        return currentState;
     }
 }
