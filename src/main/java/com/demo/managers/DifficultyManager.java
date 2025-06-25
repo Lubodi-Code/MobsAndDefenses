@@ -66,6 +66,18 @@ public class DifficultyManager {
         return config.getConfigurationSection("dificultades." + difficulty + ".global");
     }
 
+    /**
+     * Indicates if mobs should be immune to sunlight burns for the given
+     * difficulty.
+     *
+     * @param difficulty key returned by {@link #getDifficultyKey()}
+     * @return true if the configuration has "inmunidad_sol" enabled
+     */
+    public boolean isSunImmune(String difficulty) {
+        ConfigurationSection sec = getGlobalSection(difficulty);
+        return sec != null && sec.getBoolean("inmunidad_sol", false);
+    }
+
     public FileConfiguration getMobConfig(String mob) {
         return mobConfigs.get(mob.toLowerCase());
     }
