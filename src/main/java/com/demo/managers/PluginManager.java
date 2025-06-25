@@ -6,6 +6,7 @@ public class PluginManager {
     private static final PluginManager instance = new PluginManager();
     private JavaPlugin plugin;
     private ConfigManager configManager;
+    private DifficultyManager difficultyManager;
 
     private PluginManager() {}
 
@@ -16,6 +17,7 @@ public class PluginManager {
     public void initialize(JavaPlugin plugin) {
         this.plugin = plugin;
         this.configManager = new ConfigManager(plugin);
+        this.difficultyManager = new DifficultyManager(plugin);
     }
 
     public JavaPlugin getPlugin() {
@@ -24,5 +26,9 @@ public class PluginManager {
 
     public ConfigManager getConfigManager() {
         return configManager;
+    }
+
+    public DifficultyManager getDifficultyManager() {
+        return difficultyManager;
     }
 }
