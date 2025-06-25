@@ -18,7 +18,6 @@ public class ConfigManager {
     private Material buildMaterial;
     private int maxBuildHeight;
     private double buildRange;
-    private String currentDifficulty;
 
     public ConfigManager(JavaPlugin plugin) {
         this.plugin = plugin;
@@ -42,7 +41,6 @@ public class ConfigManager {
         buildMaterial = Material.valueOf(cfg.getString("construccion.material", "DIRT").toUpperCase());
         maxBuildHeight = cfg.getInt("construccion.max_altura", 5);
         buildRange = cfg.getDouble("construccion.rango", 5.0);
-        currentDifficulty = cfg.getString("dificultad_actual", "normal");
     }
 
     public Set<Material> getSoftBlocks() {
@@ -79,9 +77,5 @@ public class ConfigManager {
 
     public double getBuildRange() {
         return buildRange;
-    }
-
-    public String getCurrentDifficulty() {
-        return currentDifficulty;
     }
 }
