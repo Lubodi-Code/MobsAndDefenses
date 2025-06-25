@@ -27,7 +27,7 @@ public class ZombieSpawnHandler extends BaseSpawnHandler {
         if (!(event.getEntity() instanceof Zombie)) {
             return;
         }
-        String difficulty = configManager.getCurrentDifficulty();
+        String difficulty = difficultyManager.getDifficultyKey();
         CraftLivingEntity craft = (CraftLivingEntity) event.getEntity();
         PathfinderMob nms = (PathfinderMob) craft.getHandle();
         configurator.configure(nms, difficulty, difficultyManager);
