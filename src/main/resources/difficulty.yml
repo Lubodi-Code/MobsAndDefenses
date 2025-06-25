@@ -1,3 +1,4 @@
+dificultad_activa: facil
 dificultades:
   facil:
     global:
@@ -15,6 +16,8 @@ dificultades:
         multiplicador_velocidad: 1.0
         rango_deteccion: 16
         limite_recluta: 2
+      skeleton:
+        probabilidad_especial: 0.1
   normal:
     global:
       multiplicador_vida: 1.05
@@ -31,6 +34,8 @@ dificultades:
         multiplicador_velocidad: 1.2
         rango_deteccion: 20
         limite_recluta: 3
+      skeleton:
+        probabilidad_especial: 0.2
   dificil:
     global:
       multiplicador_vida: 1.1
@@ -47,4 +52,6 @@ dificultades:
         multiplicador_velocidad: 1.5
         rango_deteccion: 25
         limite_recluta: 5
+      skeleton:
+        probabilidad_especial: 0.3
   # espacio para otros mobs con mas habilidades
