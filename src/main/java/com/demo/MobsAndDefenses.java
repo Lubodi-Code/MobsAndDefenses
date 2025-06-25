@@ -1,7 +1,6 @@
 package com.demo;
 
 import org.bukkit.plugin.java.JavaPlugin;
-
 import com.demo.listeners.MobSpawnListener;
 import com.demo.managers.ConfigManager;
 import com.demo.managers.DifficultyManager;
@@ -13,19 +12,22 @@ public class MobsAndDefenses extends JavaPlugin {
     public void onEnable() {
         // Initialize managers
         PluginManager.getInstance().initialize(this);
-        ConfigManager configManager = PluginManager.getInstance().getConfigManager();
-        DifficultyManager difficultyManager = PluginManager.getInstance().getDifficultyManager();
+        ConfigManager configManager   = PluginManager.getInstance().getConfigManager();
+        DifficultyManager diffManager = PluginManager.getInstance().getDifficultyManager();
 
-        // Register listeners
-        getServer().getPluginManager().registerEvents(new MobSpawnListener(configManager), this);
-        //comand registration
-     
+        // Register the mob-spawn listener
+        getServer().getPluginManager()
+            .registerEvents(
+               new MobSpawnListener(configManager, diffManager, this),
+               this
+            );
 
-        getLogger().info("MobBreakBlocks has been enabled!");
+        getLogger().info("MobsAndDefenses has been enabled!");
     }
 
     @Override
     public void onDisable() {
-        getLogger().info("MobBreakBlocks has been disabled!");
+        getLogger().info("MobsAndDefenses has been disabled!");
     }
 }
+

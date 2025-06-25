@@ -1,11 +1,5 @@
 package com.demo.listeners;
 
-import com.demo.goals.BreakBlockGoal;
-import com.demo.goals.BuildPathGoal;
-import com.demo.managers.ConfigManager;
-
-import net.minecraft.world.entity.PathfinderMob;
-
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_21_R5.entity.CraftLivingEntity;
 import org.bukkit.entity.Creeper;
@@ -14,12 +8,24 @@ import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.plugin.Plugin;
+
+import com.demo.goals.BreakBlockGoal;
+import com.demo.goals.BuildPathGoal;
+import com.demo.managers.ConfigManager;
+import com.demo.managers.DifficultyManager;
+
+import net.minecraft.world.entity.PathfinderMob;
 
 public class MobSpawnListener implements Listener {
     private final ConfigManager config;
+    private final DifficultyManager difficulty;
+    private final Plugin plugin; // Add plugin reference
 
-    public MobSpawnListener(ConfigManager config) {
+    public MobSpawnListener(ConfigManager config, DifficultyManager difficulty, Plugin plugin) {
         this.config = config;
+        this.difficulty = difficulty;
+        this.plugin = plugin; // Store plugin reference
     }
 
     @EventHandler
@@ -29,6 +35,9 @@ public class MobSpawnListener implements Listener {
         if (!(entity instanceof Monster) || (entity instanceof Creeper)) {
             return;
         }
+
+        
+
         if (!BreakBlockGoal.isAllowedMob(entity)) {
             return;
         }
@@ -49,4 +58,6 @@ public class MobSpawnListener implements Listener {
             Bukkit.getLogger().warning("Failed to add goal to " + entity.getType() + ": " + e.getMessage());
         }
     }
+
+    
 }
