@@ -84,4 +84,3 @@ construccion:
   # Set max_altura to 0 or a negative value to allow unlimited building height
   max_altura: 20
   rango: 9.0
-dificultad_actual: normal
