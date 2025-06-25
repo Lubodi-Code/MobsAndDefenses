@@ -72,6 +72,7 @@
                     <include>plugin.yml</include>
                     <include>config.yml</include>
                     <include>difficulty.yml</include>
+                    <include>mobs/**</include>
                 </includes>
             </resource>
         </resources>

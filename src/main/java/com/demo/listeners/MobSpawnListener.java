@@ -8,7 +8,6 @@ import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.plugin.Plugin;
 
 import com.demo.goals.BreakBlockGoal;
 import com.demo.goals.BuildPathGoal;
@@ -20,12 +19,10 @@ import net.minecraft.world.entity.PathfinderMob;
 public class MobSpawnListener implements Listener {
     private final ConfigManager config;
     private final DifficultyManager difficulty;
-    private final Plugin plugin; // Add plugin reference
 
-    public MobSpawnListener(ConfigManager config, DifficultyManager difficulty, Plugin plugin) {
+    public MobSpawnListener(ConfigManager config, DifficultyManager difficulty) {
         this.config = config;
         this.difficulty = difficulty;
-        this.plugin = plugin; // Store plugin reference
     }
 
     @EventHandler

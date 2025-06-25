@@ -7,14 +7,6 @@ dificultades:
       multiplicador_dano: 1.0
       multiplicador_velocidad: 1.0
       rango_deteccion: 16
-    mobs:
-      zombie:
-        romper_bloques: true
-        construir: true
-        multiplicador_vida: 1.0
-        multiplicador_velocidad: 1.0
-        rango_deteccion: 16
-        limite_recluta: 2
   normal:
     global:
       multiplicador_vida: 1.05
@@ -23,14 +15,6 @@ dificultades:
       multiplicador_dano: 1.05
       multiplicador_velocidad: 1.05
       rango_deteccion: 20
-    mobs:
-      zombie:
-        romper_bloques: true
-        construir: true
-        multiplicador_vida: 1.05
-        multiplicador_velocidad: 1.2
-        rango_deteccion: 20
-        limite_recluta: 3
   dificil:
     global:
       multiplicador_vida: 1.1
@@ -39,12 +23,3 @@ dificultades:
       multiplicador_dano: 1.1
       multiplicador_velocidad: 1.1
       rango_deteccion: 25
-    mobs:
-      zombie:
-        romper_bloques: true
-        construir: true
-        multiplicador_vida: 1.1
-        multiplicador_velocidad: 1.5
-        rango_deteccion: 25
-        limite_recluta: 5
-  # espacio para otros mobs con mas habilidades

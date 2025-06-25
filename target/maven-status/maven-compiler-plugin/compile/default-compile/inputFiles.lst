@@ -5,5 +5,9 @@ c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\li
 c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\managers\ConfigManager.java
 c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\managers\DifficultyManager.java
 c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\managers\PluginManager.java
+c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\mobs\common\BaseSpawnHandler.java
+c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\mobs\common\IMobConfigurator.java
+c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\mobs\Zombie\ZombieConfigurator.java
+c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\mobs\Zombie\ZombieSpawnHandler.java
 c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\MobsAndDefenses.java
 c:\Users\36705\Desktop\MonsAndDefenses\MobsAndDefenses\src\main\java\com\demo\utils\Utils.java
