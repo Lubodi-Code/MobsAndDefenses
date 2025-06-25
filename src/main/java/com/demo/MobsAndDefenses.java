@@ -19,7 +19,7 @@ public class MobsAndDefenses extends JavaPlugin {
 
         // Register listeners
         getServer().getPluginManager().registerEvents(
-                new MobSpawnListener(configManager, difficultyManager), this);
+                new MobSpawnListener(configManager, difficultyManager, this), this);
         getServer().getPluginManager().registerEvents(new ArrowImpactListener(), this);
         //comand registration
      
