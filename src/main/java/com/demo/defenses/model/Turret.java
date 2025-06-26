@@ -189,7 +189,7 @@ public class Turret {
         stand.getWorld().playSound(shootLocation, org.bukkit.Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
         
         // Efecto de partículas en la cabeza de la torreta
-        stand.getWorld().spawnParticle(org.bukkit.Particle.SMOKE_NORMAL, shootLocation, 5, 0.1, 0.1, 0.1, 0.05);
+        stand.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, shootLocation, 5, 0.1, 0.1, 0.1, 0.05);
     }
 
     /**
