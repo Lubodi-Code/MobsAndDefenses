@@ -11,6 +11,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 /**
@@ -66,7 +67,7 @@ public class Turret {
             case DISPENSER -> Material.ARROW;
             case DROPPER -> Material.COBBLESTONE;
             case OBSERVER -> Material.COAL;
-            case CRAFTER -> Material.REDSTONE;
+            case CRAFTER -> Material.PRISMARINE_CRYSTALS;
         };
     }
 
@@ -132,7 +133,7 @@ public class Turret {
                 case ARROW -> "flechas";
                 case COBBLESTONE -> "piedra";
                 case COAL -> "carbón";
-                case REDSTONE -> "redstone";
+                case PRISMARINE_CRYSTALS -> "cristales";
                 default -> "munición";
             };
             controller.sendMessage("§c¡Sin munición! La torreta necesita " + ammoName + ".");
@@ -162,14 +163,14 @@ public class Turret {
             case DISPENSER -> {
                 Arrow arr = stand.getWorld().spawnArrow(shootLocation, direction, (float) speed, 0f);
                 arr.setShooter(stand);
-                arr.setDamage(4.0);
+                arr.setDamage(10.0); // 5 corazones
             }
             case DROPPER -> {
                 var stone = stand.getWorld().spawn(shootLocation, org.bukkit.entity.Snowball.class);
                 stone.setItem(new ItemStack(Material.COBBLESTONE));
                 stone.setShooter(stand);
                 stone.setVelocity(direction.multiply(speed));
-                stone.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 2.0));
+                stone.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 6.0)); // 3 corazones
             }
             case OBSERVER -> {
                 var fireball = stand.getWorld().spawn(shootLocation, org.bukkit.entity.SmallFireball.class);
@@ -177,13 +178,17 @@ public class Turret {
                 fireball.setDirection(direction);
                 fireball.setVelocity(direction.multiply(speed));
                 fireball.setIsIncendiary(true);
-                fireball.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 6.0));
+                fireball.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 20.0)); // 10 corazones
             }
             case CRAFTER -> {
                 Arrow laser = stand.getWorld().spawnArrow(shootLocation, direction, (float) speed, 0f);
                 laser.setShooter(stand);
-                laser.setDamage(10.0);
+                laser.setDamage(40.0); // 20 corazones
                 laser.setCritical(true);
+                for (int i = 0; i < 5; i++) {
+                    Location pLoc = shootLocation.clone().add(direction.clone().multiply(i * 0.5));
+                    stand.getWorld().spawnParticle(Particle.END_ROD, pLoc, 2, 0, 0, 0, 0);
+                }
             }
         }
 
