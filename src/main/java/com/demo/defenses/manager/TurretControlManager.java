@@ -29,10 +29,12 @@ public class TurretControlManager {
     // Task para actualizar las rotaciones
     private static BukkitRunnable updateTask;
     
-    // Límites de rotación
-    private static final double MAX_YAW_OFFSET = 90.0; // 90 grados a cada lado (180 total)
-    private static final double MAX_PITCH_UP = -90.0;  // 90 grados hacia arriba
+    // Límites de rotación y distancia
+    private static final double MAX_YAW_OFFSET = 45.0;  // 45 grados a cada lado (90 total)
+    private static final double MAX_PITCH_UP = -90.0;   // 90 grados hacia arriba
     private static final double MAX_PITCH_DOWN = 20.0;  // 20 grados hacia abajo
+    private static final double MAX_CONTROL_DISTANCE = 50.0; // Distancia máxima para controlar
+    private static final double MIN_FORWARD_DOT = 0.0;  // Mínimo producto punto para estar "adelante"
     
     /**
      * Inicia el control de una torreta por un jugador
@@ -60,7 +62,7 @@ public class TurretControlManager {
         player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, Integer.MAX_VALUE, -10, false, false));
         
         // Mensaje al jugador
-        player.sendMessage("§aControlando torreta. Click derecho para disparar, Shift+Click para salir.");
+        player.sendMessage("§aControlando torreta. Click izquierdo/derecho para disparar, Shift+Click para salir.");
         
         // Iniciar el task de actualización si no está activo
         startUpdateTask();
@@ -90,7 +92,9 @@ public class TurretControlManager {
                 ArmorStand stand = turret.getArmorStand();
                 if (stand != null) {
                     stand.setHeadPose(new EulerAngle(0, 0, 0));
+                    stand.setGlowing(false);
                 }
+                turret.setActive(false); // Desactivar la torreta
             }
             
             player.sendMessage("§cHas dejado de controlar la torreta.");
@@ -119,6 +123,58 @@ public class TurretControlManager {
         }
         return null;
     }
+
+    /**
+     * Verifica si el jugador puede disparar la torreta basado en su dirección
+     */
+    public static boolean canFireTurret(Player player, Turret turret) {
+        ArmorStand stand = turret.getArmorStand();
+        if (stand == null) return false;
+
+        Location playerLoc = player.getEyeLocation();
+        Location turretLoc = stand.getLocation();
+
+        // Verificar distancia
+        if (playerLoc.distance(turretLoc) > MAX_CONTROL_DISTANCE) {
+            return false;
+        }
+
+        // Calcular la dirección desde la torreta hacia el jugador
+        org.bukkit.util.Vector turretToPlayer = playerLoc.toVector().subtract(turretLoc.toVector()).normalize();
+
+        // Calcular la dirección frontal de la torreta
+        org.bukkit.util.Vector turretForward = turretLoc.getDirection();
+
+        // Producto punto para verificar si el jugador está en el rango frontal
+        double dot = turretForward.dot(turretToPlayer);
+
+        return dot >= MIN_FORWARD_DOT;
+    }
+
+    /**
+     * Verifica si la dirección del jugador está dentro del rango de la torreta
+     */
+    private static boolean isWithinTurretRange(Player player, ArmorStand stand) {
+        Location playerLoc = player.getEyeLocation();
+        Location turretLoc = stand.getEyeLocation();
+
+        // Calcular la diferencia de yaw (rotación horizontal)
+        float playerYaw = playerLoc.getYaw();
+        float turretYaw = turretLoc.getYaw();
+        float yawDiff = Math.abs(normalizeAngle(playerYaw - turretYaw));
+
+        // Verificar si está dentro del rango horizontal
+        if (yawDiff > MAX_YAW_OFFSET) {
+            return false;
+        }
+
+        // Verificar si está mirando hacia la torreta (no hacia atrás)
+        org.bukkit.util.Vector playerDirection = playerLoc.getDirection();
+        org.bukkit.util.Vector toTurret = turretLoc.toVector().subtract(playerLoc.toVector()).normalize();
+
+        // Si el producto punto es negativo, está mirando hacia atrás
+        return playerDirection.dot(toTurret) >= 0;
+    }
     
     /**
      * Inicia el task de actualización de rotaciones
@@ -142,7 +198,26 @@ public class TurretControlManager {
                         continue;
                     }
                     
-                    updateTurretRotation(player, turret);
+                    ArmorStand stand = turret.getArmorStand();
+                    if (stand == null) {
+                        stopControlling(player);
+                        continue;
+                    }
+
+                    // Verificar distancia
+                    if (player.getLocation().distance(stand.getLocation()) > MAX_CONTROL_DISTANCE) {
+                        player.sendMessage("§cTe has alejado demasiado de la torreta. Control desactivado.");
+                        stopControlling(player);
+                        continue;
+                    }
+
+                    // Actualizar rotación solo si está dentro del rango
+                    if (isWithinTurretRange(player, stand)) {
+                        updateTurretRotation(player, turret);
+                    } else {
+                        // Resetear rotación si está fuera del rango
+                        stand.setHeadPose(new EulerAngle(0, 0, 0));
+                    }
                 }
                 
                 // Si no hay más controladores, detener el task
@@ -179,7 +254,7 @@ public class TurretControlManager {
         float turretYaw = turretLoc.getYaw();
         float yawDiff = normalizeAngle(playerYaw - turretYaw);
         
-        // Limitar el yaw dentro del rango permitido
+        // Limitar el yaw dentro del rango permitido (45 grados a cada lado)
         yawDiff = Math.max((float)-MAX_YAW_OFFSET, Math.min((float)MAX_YAW_OFFSET, yawDiff));
         
         // Calcular el pitch (rotación vertical)
@@ -213,7 +288,12 @@ public class TurretControlManager {
         if (turret != null && turret.isActive()) {
             ArmorStand stand = turret.getArmorStand();
             if (stand != null) {
-                turret.fire(player, stand);
+                // Verificar si puede disparar (distancia y dirección)
+                if (canFireTurret(player, turret) && isWithinTurretRange(player, stand)) {
+                    turret.fire(player, stand);
+                } else {
+                    player.sendMessage("§cNo puedes disparar en esa dirección o estás demasiado lejos.");
+                }
             }
         }
     }

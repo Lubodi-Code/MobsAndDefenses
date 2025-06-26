@@ -4,10 +4,13 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 /**
@@ -22,6 +25,7 @@ public class Turret {
     public Turret(UUID standId, TurretType type) {
         this.standId = standId;
         this.type = type;
+        this.active = false; // Inicialmente desactivada
     }
 
     public UUID getStandId() {
@@ -36,6 +40,10 @@ public class Turret {
         return active;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public void toggleActive() {
         this.active = !this.active;
     }
@@ -44,10 +52,98 @@ public class Turret {
         return System.currentTimeMillis() - lastShot >= type.getReloadTime();
     }
 
+    /**
+     * Obtiene el tipo de munición que usa esta torreta
+     */
+    public Material getAmmoType() {
+        return switch (type) {
+            case DISPENSER -> Material.ARROW;
+            case DROPPER -> Material.COBBLESTONE;
+            case OBSERVER -> Material.COAL;
+            case CRAFTER -> Material.REDSTONE;
+        };
+    }
+
+    /**
+     * Verifica si hay munición en el inventario de la torreta
+     */
+    public boolean hasAmmo() {
+        ArmorStand stand = getArmorStand();
+        if (stand == null) return false;
+
+        Inventory inventory = stand.getInventory();
+        Material ammoType = getAmmoType();
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() == ammoType && item.getAmount() > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Consume una unidad de munición
+     */
+    private boolean consumeAmmo() {
+        ArmorStand stand = getArmorStand();
+        if (stand == null) return false;
+
+        Inventory inventory = stand.getInventory();
+        Material ammoType = getAmmoType();
+        for (int i = 0; i < inventory.getSize(); i++) {
+            ItemStack item = inventory.getItem(i);
+            if (item != null && item.getType() == ammoType && item.getAmount() > 0) {
+                if (item.getAmount() == 1) {
+                    inventory.setItem(i, null);
+                } else {
+                    item.setAmount(item.getAmount() - 1);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Devuelve la munición restante en el inventario
+     */
+    public int getRemainingAmmo() {
+        ArmorStand stand = getArmorStand();
+        if (stand == null) return 0;
+
+        Inventory inventory = stand.getInventory();
+        Material ammoType = getAmmoType();
+        int total = 0;
+        for (ItemStack item : inventory.getContents()) {
+            if (item != null && item.getType() == ammoType) {
+                total += item.getAmount();
+            }
+        }
+        return total;
+    }
+
     public void fire(Player controller, ArmorStand stand) {
         if (!isReady()) {
-            controller.sendMessage("§6Torreta recargando... (" +
-                ((type.getReloadTime() - (System.currentTimeMillis() - lastShot)) / 1000.0) + "s)");
+            double remainingTime = (type.getReloadTime() - (System.currentTimeMillis() - lastShot)) / 1000.0;
+            controller.sendMessage("§6Torreta recargando... (" + String.format("%.1f", remainingTime) + "s)");
+            return;
+        }
+
+        // Verificar munición disponible
+        if (!hasAmmo()) {
+            String ammoName = switch (getAmmoType()) {
+                case ARROW -> "flechas";
+                case COBBLESTONE -> "piedra";
+                case COAL -> "carbón";
+                case REDSTONE -> "redstone";
+                default -> "munición";
+            };
+            controller.sendMessage("§c¡Sin munición! La torreta necesita " + ammoName + ".");
+            return;
+        }
+
+        if (!consumeAmmo()) {
+            controller.sendMessage("§cError al consumir munición.");
             return;
         }
 
@@ -56,6 +152,12 @@ public class Turret {
 
         // Usar la dirección exacta de donde está mirando el jugador
         Vector direction = controller.getEyeLocation().getDirection().normalize();
+
+        // Verificar que el disparo está dentro del rango permitido
+        if (!isDirectionValid(controller, stand)) {
+            controller.sendMessage("§cNo puedes disparar en esa dirección - fuera del rango de la torreta");
+            return;
+        }
 
         // Crear la flecha
         Arrow arrow = stand.getWorld().spawnArrow(shootLocation, direction, 2.0f, 0.1f);
@@ -82,21 +184,71 @@ public class Turret {
         // Actualizar tiempo del último disparo
         lastShot = System.currentTimeMillis();
 
-        // Mensaje al jugador
-        controller.sendMessage("§e¡Disparo! Tipo: " + type.name());
+        // Mensaje al jugador con munición restante
+        int remaining = getRemainingAmmo();
+        controller.sendMessage("§e¡Disparo! §7(" + remaining + " munición restante)");
 
-        // Efecto de sonido
+        // Efectos de sonido y visuales
         stand.getWorld().playSound(shootLocation, org.bukkit.Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
+        
+        // Efecto de partículas en la cabeza de la torreta
+        stand.getWorld().spawnParticle(org.bukkit.Particle.SMOKE_NORMAL, shootLocation, 5, 0.1, 0.1, 0.1, 0.05);
+    }
+
+    /**
+     * Verifica si la dirección del disparo es válida (dentro del rango de la torreta)
+     */
+    private boolean isDirectionValid(Player controller, ArmorStand stand) {
+        Location playerLoc = controller.getEyeLocation();
+        Location turretLoc = stand.getEyeLocation();
+
+        // Calcular la diferencia de yaw (rotación horizontal)
+        float playerYaw = playerLoc.getYaw();
+        float turretYaw = turretLoc.getYaw();
+        float yawDiff = Math.abs(normalizeAngle(playerYaw - turretYaw));
+
+        // Verificar si está dentro del rango horizontal (45 grados a cada lado)
+        if (yawDiff > 45.0) {
+            return false;
+        }
+
+        // Verificar si está mirando hacia adelante (no hacia atrás)
+        Vector playerDirection = playerLoc.getDirection();
+        Vector turretDirection = turretLoc.getDirection();
+
+        // Producto punto para verificar si están en la misma dirección general
+        double dot = playerDirection.dot(turretDirection);
+
+        return dot > 0; // Si es positivo, están mirando en la misma dirección general
+    }
+
+    /**
+     * Normaliza un ángulo para que esté entre -180 y 180
+     */
+    private float normalizeAngle(float angle) {
+        while (angle > 180f) angle -= 360f;
+        while (angle < -180f) angle += 360f;
+        return angle;
     }
 
     /**
      * Convenience method to get the armor stand if still present.
      */
-   public ArmorStand getArmorStand() {
-    Entity e = Bukkit.getServer().getEntity(standId);
-    if (e instanceof ArmorStand as) {
-        return as;
+    public ArmorStand getArmorStand() {
+        Entity e = Bukkit.getServer().getEntity(standId);
+        if (e instanceof ArmorStand as) {
+            return as;
+        }
+        return null;
     }
-    return null;
-}
+
+    /**
+     * Obtiene información detallada de la torreta
+     */
+    public String getInfo() {
+        return String.format("§6Torreta %s§r - Estado: %s - Recarga: %.1fs",
+            type.name(),
+            active ? "§aActiva" : "§cInactiva",
+            type.getReloadTime() / 1000.0);
+    }
 }
