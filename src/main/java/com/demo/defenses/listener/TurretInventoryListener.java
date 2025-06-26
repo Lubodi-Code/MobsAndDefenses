@@ -1,12 +1,12 @@
 package com.demo.defenses.listener;
 
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 
 import com.demo.defenses.manager.TurretManager;
 import com.demo.defenses.model.Turret;
+import com.demo.defenses.model.TurretInventoryHolder;
 
 
 /**
@@ -16,8 +16,8 @@ public class TurretInventoryListener implements Listener {
 
     @EventHandler
     public void onOpen(InventoryOpenEvent e) {
-        if (!(e.getInventory().getHolder() instanceof ArmorStand stand)) return;
-        Turret turret = TurretManager.getTurret(stand.getUniqueId());
+        if (!(e.getInventory().getHolder() instanceof TurretInventoryHolder holder)) return;
+        Turret turret = TurretManager.getTurret(holder.getStandId());
         if (turret == null) return;
         // Ya no llenamos automáticamente el inventario
         // El jugador debe agregar manualmente la munición apropiada

@@ -64,7 +64,13 @@ public class TurretManager {
             as.setHealth(20.0); // 10 corazones de vida
         });
 
-        Inventory inv = Bukkit.createInventory(stand, 9, "Turret");
+        // Use a custom inventory holder so we can associate the inventory
+        // with an armor stand that normally does not implement InventoryHolder
+        com.demo.defenses.model.TurretInventoryHolder holder =
+                new com.demo.defenses.model.TurretInventoryHolder(stand.getUniqueId());
+        Inventory inv = Bukkit.createInventory(holder, 9, "Turret");
+        holder.setInventory(inv);
+
         Turret turret = new Turret(stand.getUniqueId(), type, inv);
         register(turret);
         return stand;
