@@ -22,6 +22,7 @@ public class MobsAndDefenses extends JavaPlugin {
         PluginManager.getInstance().initialize(this);
         ConfigManager configManager   = PluginManager.getInstance().getConfigManager();
         DifficultyManager diffManager = PluginManager.getInstance().getDifficultyManager();
+        PluginManager.getInstance().registerDefenses();
 
 
 

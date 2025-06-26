@@ -8,6 +8,19 @@ public class PluginManager {
     private ConfigManager configManager;
     private DifficultyManager difficultyManager;
 
+    /** Register crafting and event handlers for turret defenses. */
+    public void registerDefenses() {
+        com.demo.defenses.crafting.TurretCrafting crafting = new com.demo.defenses.crafting.TurretCrafting(plugin);
+        crafting.registerRecipes();
+
+        com.demo.defenses.manager.TurretManager.setup(plugin);
+
+        var pm = plugin.getServer().getPluginManager();
+        pm.registerEvents(new com.demo.defenses.spawn.TurretSpawnHandler(plugin), plugin);
+        pm.registerEvents(new com.demo.defenses.listener.TurretInteractListener(), plugin);
+        pm.registerEvents(new com.demo.defenses.listener.TurretInventoryListener(), plugin);
+    }
+
     private PluginManager() {}
 
     public static PluginManager getInstance() {
