@@ -124,7 +124,7 @@ public class TurretInteractListener implements Listener {
         
         // Click normal sin Shift - abrir inventario si está inactiva
         if (!turret.isActive()) {
-            player.openInventory(stand.getInventory());
+            player.openInventory(turret.getInventory());
             player.sendMessage("§6Accediendo al inventario de la torreta");
         } else {
             player.sendMessage("§6Esta torreta está siendo controlada. Usa Shift+Click para activar/desactivar.");
