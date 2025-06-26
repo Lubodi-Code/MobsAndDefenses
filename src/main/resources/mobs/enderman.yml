@@ -1,0 +1,6 @@
+enderman:
+  sound:
+    volume: 1.0
+    pitch: 1.0
+  effect-duration: 100
+  effect-amplifier: 1

@@ -1,0 +1,6 @@
+creeper:
+  speed-multiplier: 2.0
+  follow-range: 40.0
+  activation-radius: 3.0
+  chase-duration-seconds: 10
+  explosion-power: 3.0
