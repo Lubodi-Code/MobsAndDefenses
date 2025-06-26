@@ -13,9 +13,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 
-import com.demo.managers.PluginManager;
-
 import com.demo.defenses.model.Turret;
+import com.demo.managers.PluginManager;
 
 /**
  * Maneja el control activo de torretas por jugadores.
@@ -38,7 +37,7 @@ public class TurretControlManager {
     private static final double MAX_YAW_OFFSET = 45.0;  // 45 grados a cada lado (90 total)
     private static final double MAX_PITCH_UP = -90.0;   // 90 grados hacia arriba
     private static final double MAX_PITCH_DOWN = 20.0;  // 20 grados hacia abajo
-    private static final double MAX_CONTROL_DISTANCE = 50.0; // Distancia máxima para controlar
+    private static final double MAX_CONTROL_DISTANCE = 2.0; // Distancia máxima para controlar (2 bloques)
     private static final double MIN_FORWARD_DOT = 0.0;  // Mínimo producto punto para estar "adelante"
     
     /**
@@ -130,37 +129,6 @@ public class TurretControlManager {
     }
 
     /**
-     * Verifica si el jugador puede disparar la torreta basado en su dirección
-     */
-    public static boolean canFireTurret(Player player, Turret turret) {
-        ArmorStand stand = turret.getArmorStand();
-        if (stand == null) return false;
-
-        Location playerLoc = player.getEyeLocation();
-        Location turretLoc = stand.getEyeLocation();
-
-        // Verificar distancia
-        if (playerLoc.distance(turretLoc) > MAX_CONTROL_DISTANCE) {
-            return false;
-        }
-
-        // Calcular la dirección desde la torreta hacia el jugador
-        org.bukkit.util.Vector turretToPlayer = playerLoc.toVector().subtract(turretLoc.toVector()).normalize();
-
-        // Calcular la dirección frontal de la torreta
-        float baseYaw = turretLoc.getYaw();
-        float headOffset = (float) Math.toDegrees(stand.getHeadPose().getY());
-        Location lookLoc = turretLoc.clone();
-        lookLoc.setYaw(baseYaw + headOffset);
-        org.bukkit.util.Vector turretForward = lookLoc.getDirection();
-
-        // Producto punto para verificar si el jugador está en el rango frontal
-        double dot = turretForward.dot(turretToPlayer);
-
-        return dot >= MIN_FORWARD_DOT;
-    }
-
-    /**
      * Verifica si la dirección del jugador está dentro del rango de la torreta
      */
     private static boolean isWithinTurretRange(Player player, ArmorStand stand) {
@@ -216,7 +184,7 @@ public class TurretControlManager {
                         continue;
                     }
 
-                    // Verificar distancia
+                    // Verificar distancia (2 bloques)
                     if (player.getLocation().distance(stand.getLocation()) > MAX_CONTROL_DISTANCE) {
                         player.sendMessage("§cTe has alejado demasiado de la torreta. Control desactivado.");
                         stopControlling(player);
@@ -294,18 +262,16 @@ public class TurretControlManager {
     
     /**
      * Maneja el disparo de una torreta controlada
+     * El disparo se realiza en la dirección donde está mirando la cabeza del ArmorStand
      */
     public static void fireTurret(Player player) {
         Turret turret = getControlledTurret(player);
         if (turret != null && turret.isActive()) {
             ArmorStand stand = turret.getArmorStand();
             if (stand != null) {
-                // Verificar si puede disparar (distancia y dirección)
-                if (canFireTurret(player, turret) && isWithinTurretRange(player, stand)) {
-                    turret.fire(player, stand);
-                } else {
-                    player.sendMessage("§cNo puedes disparar en esa dirección o estás demasiado lejos.");
-                }
+                // Disparar siempre que la torreta esté activa
+                // El disparo se hace en la dirección de la cabeza del ArmorStand
+                turret.fire(player, stand);
             }
         }
     }
@@ -326,4 +292,3 @@ public class TurretControlManager {
     }
     
 }
-
