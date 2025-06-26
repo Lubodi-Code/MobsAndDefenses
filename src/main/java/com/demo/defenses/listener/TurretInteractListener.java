@@ -32,13 +32,16 @@ public class TurretInteractListener implements Listener {
     
     /**
      * Maneja los clicks en el aire para disparar cuando se controla una torreta
+     * Ahora incluye tanto click izquierdo como derecho
      */
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent e) {
         Player player = e.getPlayer();
         
-        // Solo procesar clicks derechos
-        if (!e.getAction().name().contains("RIGHT_CLICK")) return;
+        // Procesar clicks izquierdos y derechos
+        if (!e.getAction().name().contains("LEFT_CLICK") && !e.getAction().name().contains("RIGHT_CLICK")) {
+            return;
+        }
         
         // Verificar si el jugador está controlando una torreta
         if (TurretControlManager.isControlling(player)) {
@@ -69,8 +72,6 @@ public class TurretInteractListener implements Listener {
             Turret controlledTurret = TurretControlManager.getControlledTurret(player);
             if (controlledTurret != null && controlledTurret.getStandId().equals(id)) {
                 TurretControlManager.stopControlling(player);
-                turret.toggleActive(); // Desactivar la torreta
-                stand.setGlowing(false);
                 return;
             }
         }
@@ -103,6 +104,9 @@ public class TurretInteractListener implements Listener {
                 // Intentar iniciar el control
                 if (TurretControlManager.startControlling(player, turret)) {
                     player.sendMessage("§aModo torreta: §2activado §f- Ahora controlas la torreta");
+                    player.sendMessage("§eUsa click izquierdo o derecho para disparar");
+                    player.sendMessage("§eDistancia máxima: 50 bloques");
+                    player.sendMessage("§eRango de disparo: 90 grados frontales");
                     stand.setGlowing(true);
                 } else {
                     // Si no se puede controlar, desactivar
@@ -118,11 +122,12 @@ public class TurretInteractListener implements Listener {
             return;
         }
         
-        // Click normal sin Shift
-        if (turret.isActive()) {
-            player.sendMessage("§6Esta torreta ya está siendo controlada. Usa Shift+Click para activar/desactivar.");
+        // Click normal sin Shift - abrir inventario si está inactiva
+        if (!turret.isActive()) {
+            player.openInventory(stand.getInventory());
+            player.sendMessage("§6Accediendo al inventario de la torreta");
         } else {
-            player.sendMessage("§cLa torreta está desactivada. Usa Shift+Click para activarla y controlarla.");
+            player.sendMessage("§6Esta torreta está siendo controlada. Usa Shift+Click para activar/desactivar.");
         }
     }
 
@@ -132,6 +137,17 @@ public class TurretInteractListener implements Listener {
 
         Turret turret = TurretManager.getTurret(stand.getUniqueId());
         if (turret == null) return;
+
+        // Detener el control si alguien está controlando esta torreta
+        // Buscar el jugador que controla esta torreta
+        for (org.bukkit.entity.Player player : org.bukkit.Bukkit.getOnlinePlayers()) {
+            Turret controlledTurret = TurretControlManager.getControlledTurret(player);
+            if (controlledTurret != null && controlledTurret.getStandId().equals(stand.getUniqueId())) {
+                TurretControlManager.stopControlling(player);
+                player.sendMessage("§cLa torreta que controlabas ha sido destruida.");
+                break;
+            }
+        }
 
         // Limpiar la torreta del registro cuando muere
         TurretManager.unregister(stand.getUniqueId());
