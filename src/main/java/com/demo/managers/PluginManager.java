@@ -10,10 +10,13 @@ public class PluginManager {
 
     /** Register crafting and event handlers for turret defenses. */
     public void registerDefenses() {
-        com.demo.defenses.crafting.TurretCrafting crafting = new com.demo.defenses.crafting.TurretCrafting(plugin);
-        crafting.registerRecipes();
-
+        // Setup the turret manager before creating items that rely on its key
         com.demo.defenses.manager.TurretManager.setup(plugin);
+
+        // Register crafting recipes once the key is initialized
+        com.demo.defenses.crafting.TurretCrafting crafting =
+                new com.demo.defenses.crafting.TurretCrafting(plugin);
+        crafting.registerRecipes();
 
         var pm = plugin.getServer().getPluginManager();
         pm.registerEvents(new com.demo.defenses.spawn.TurretSpawnHandler(plugin), plugin);
