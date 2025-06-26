@@ -22,6 +22,7 @@ public class PluginManager {
         pm.registerEvents(new com.demo.defenses.spawn.TurretSpawnHandler(plugin), plugin);
         pm.registerEvents(new com.demo.defenses.listener.TurretInteractListener(), plugin);
         pm.registerEvents(new com.demo.defenses.listener.TurretInventoryListener(), plugin);
+        pm.registerEvents(new com.demo.defenses.listener.TurretProjectileListener(), plugin);
     }
 
     private PluginManager() {}
