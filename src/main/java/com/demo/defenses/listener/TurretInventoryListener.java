@@ -28,7 +28,7 @@ public class TurretInventoryListener implements Listener {
                 case DISPENSER -> "§eFlecha";
                 case DROPPER -> "§7Piedra";
                 case OBSERVER -> "§8Carbón";
-                case CRAFTER -> "§cRedstone";
+                case CRAFTER -> "§bCristales";
             };
             e.getPlayer().sendMessage("§6Esta torreta usa munición de tipo: " + ammoType);
         }
