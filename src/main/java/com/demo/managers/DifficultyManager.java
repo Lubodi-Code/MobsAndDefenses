@@ -42,6 +42,10 @@ public class DifficultyManager {
         // Copy example mob configs
         plugin.saveResource("mobs/zombie.yml", false);
         plugin.saveResource("mobs/skeleton.yml", false);
+        plugin.saveResource("mobs/creeper.yml", false);
+        plugin.saveResource("mobs/enderman.yml", false);
+        plugin.saveResource("mobs/spider.yml", false);
+        plugin.saveResource("mobs/wither.yml", false);
         reload();
     }
 

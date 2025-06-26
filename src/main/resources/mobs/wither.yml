@@ -1,0 +1,7 @@
+enabled: true
+explosion-power: 6.0
+knockback-strength: 2.5
+sound:
+  type: ENTITY_WITHER_AMBIENT
+  volume: 2.0
+  pitch: 0.8

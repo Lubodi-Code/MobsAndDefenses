@@ -1,0 +1,4 @@
+spider:
+  enabled: true
+  trap-chance: 0.25
+  trap-radius: 1
