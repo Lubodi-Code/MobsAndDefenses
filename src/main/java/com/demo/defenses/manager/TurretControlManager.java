@@ -137,7 +137,7 @@ public class TurretControlManager {
         if (stand == null) return false;
 
         Location playerLoc = player.getEyeLocation();
-        Location turretLoc = stand.getLocation();
+        Location turretLoc = stand.getEyeLocation();
 
         // Verificar distancia
         if (playerLoc.distance(turretLoc) > MAX_CONTROL_DISTANCE) {
@@ -148,7 +148,11 @@ public class TurretControlManager {
         org.bukkit.util.Vector turretToPlayer = playerLoc.toVector().subtract(turretLoc.toVector()).normalize();
 
         // Calcular la dirección frontal de la torreta
-        org.bukkit.util.Vector turretForward = turretLoc.getDirection();
+        float baseYaw = turretLoc.getYaw();
+        float headOffset = (float) Math.toDegrees(stand.getHeadPose().getY());
+        Location lookLoc = turretLoc.clone();
+        lookLoc.setYaw(baseYaw + headOffset);
+        org.bukkit.util.Vector turretForward = lookLoc.getDirection();
 
         // Producto punto para verificar si el jugador está en el rango frontal
         double dot = turretForward.dot(turretToPlayer);
@@ -163,9 +167,12 @@ public class TurretControlManager {
         Location playerLoc = player.getEyeLocation();
         Location turretLoc = stand.getEyeLocation();
 
+        float baseYaw = turretLoc.getYaw();
+        float headOffset = (float) Math.toDegrees(stand.getHeadPose().getY());
+        float turretYaw = baseYaw + headOffset;
+
         // Calcular la diferencia de yaw (rotación horizontal)
         float playerYaw = playerLoc.getYaw();
-        float turretYaw = turretLoc.getYaw();
         float yawDiff = Math.abs(normalizeAngle(playerYaw - turretYaw));
 
         // Verificar si está dentro del rango horizontal

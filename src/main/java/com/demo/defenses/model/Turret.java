@@ -199,24 +199,29 @@ public class Turret {
         Location playerLoc = controller.getEyeLocation();
         Location turretLoc = stand.getEyeLocation();
 
-        // Calcular la diferencia de yaw (rotación horizontal)
+        // Calcular la orientación real de la cabeza de la torreta
+        float baseYaw = turretLoc.getYaw();
+        float headOffset = (float) Math.toDegrees(stand.getHeadPose().getY());
+        float turretYaw = baseYaw + headOffset;
+
+        // Diferencia entre la vista del jugador y la de la torreta
         float playerYaw = playerLoc.getYaw();
-        float turretYaw = turretLoc.getYaw();
         float yawDiff = Math.abs(normalizeAngle(playerYaw - turretYaw));
 
-        // Verificar si está dentro del rango horizontal (45 grados a cada lado)
+        // Verificar si está dentro del rango horizontal permitido
         if (yawDiff > 45.0) {
             return false;
         }
 
-        // Verificar si está mirando hacia adelante (no hacia atrás)
+        // Direcciones para el producto punto
+        Location turretLook = turretLoc.clone();
+        turretLook.setYaw(turretYaw);
+
         Vector playerDirection = playerLoc.getDirection();
-        Vector turretDirection = turretLoc.getDirection();
+        Vector turretDirection = turretLook.getDirection();
 
-        // Producto punto para verificar si están en la misma dirección general
-        double dot = playerDirection.dot(turretDirection);
-
-        return dot > 0; // Si es positivo, están mirando en la misma dirección general
+        // Si es positivo, están mirando en la misma dirección general
+        return playerDirection.dot(turretDirection) > 0;
     }
 
     /**
