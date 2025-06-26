@@ -82,7 +82,7 @@ public class SkeletonSpawnHandler extends BaseSpawnHandler {
         }
         Location loc = proj.getLocation();
         float power = (float) sec.getDouble("explosion-power", 2.0);
-        loc.getWorld().createExplosion(loc, power, false, false);
+        loc.getWorld().createExplosion(loc, power, true, true);
         proj.remove();
     }
 }

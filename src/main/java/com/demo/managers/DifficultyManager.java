@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Difficulty;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -24,7 +25,8 @@ public class DifficultyManager {
      *         configurada en el servidor.
      */
     public String getDifficultyKey() {
-        Difficulty diff = plugin.getServer().getDifficulty();
+       World world = plugin.getServer().getWorlds().get(0);
+        Difficulty diff = world != null ? world.getDifficulty() : Difficulty.EASY;
         return switch (diff) {
             case EASY -> "facil";
             case NORMAL -> "normal";

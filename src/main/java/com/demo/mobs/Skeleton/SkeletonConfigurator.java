@@ -24,16 +24,16 @@ public class SkeletonConfigurator {
             return;
         }
         double range = sect.getDouble("follow-range", 40.0);
-        skeleton.getAttribute(Attribute.GENERIC_FOLLOW_RANGE)
+        skeleton.getAttribute(Attribute.FOLLOW_RANGE)
                 .setBaseValue(range);
         skeleton.setRemoveWhenFarAway(false);
 
         ItemStack bow = new ItemStack(Material.BOW);
         if (sect.getBoolean("enchanted-bow", true)) {
             int power = sect.getInt("power-level", 2);
-            bow.addUnsafeEnchantment(Enchantment.ARROW_DAMAGE, power);
+            bow.addUnsafeEnchantment(Enchantment.POWER, power);
             if (sect.getBoolean("allow-fire-arrows", false)) {
-                bow.addUnsafeEnchantment(Enchantment.ARROW_FIRE, 1);
+                bow.addUnsafeEnchantment(Enchantment.FLAME, 1);
             }
         }
         skeleton.getEquipment().setItemInMainHand(bow);
