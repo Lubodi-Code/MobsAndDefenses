@@ -13,12 +13,23 @@ public class PluginManager {
         return instance;
     }
 
+    /**
+     * Initializes the manager with the running plugin instance.
+     * This should only be called once from the plugin's {@code onEnable}.
+     */
     public void initialize(JavaPlugin plugin) {
-        this.plugin = plugin;
-        this.configManager = new ConfigManager(plugin);
+        if (this.plugin != null) {
+            return; // already initialised
+        }
+        this.plugin = java.util.Objects.requireNonNull(plugin, "plugin");
+        this.configManager = new ConfigManager(this.plugin);
     }
 
+    /** Returns the stored plugin instance. */
     public JavaPlugin getPlugin() {
+        if (plugin == null) {
+            throw new IllegalStateException("PluginManager not initialized");
+        }
         return plugin;
     }
 
