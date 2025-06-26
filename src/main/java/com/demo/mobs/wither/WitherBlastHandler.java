@@ -58,8 +58,8 @@ public class WitherBlastHandler extends BaseSpawnHandler implements Listener {
         float vol = (float) s.getDouble("sound.volume", 2.0);
         float pit = (float) s.getDouble("sound.pitch", 0.8f);
 
-        if (!w.getGameRuleValue(org.bukkit.GameRule.DO_MOB_GRIEFING)) {
-            w.setGameRule(org.bukkit.GameRule.DO_MOB_GRIEFING, true);
+        if (!w.getGameRuleValue(org.bukkit.GameRule.MOB_GRIEFING)) {
+            w.setGameRule(org.bukkit.GameRule.MOB_GRIEFING, true);
         }
 
         w.createExplosion(loc, power, false, true);

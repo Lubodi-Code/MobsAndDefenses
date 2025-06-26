@@ -2,6 +2,7 @@ package com.demo.defenses.model;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
@@ -55,10 +56,11 @@ public class Turret {
     /**
      * Convenience method to get the armor stand if still present.
      */
-    public ArmorStand getArmorStand(Entity context) {
-        if (context.getWorld().getEntity(standId) instanceof ArmorStand as) {
-            return as;
-        }
-        return null;
+   public ArmorStand getArmorStand() {
+    Entity e = Bukkit.getServer().getEntity(standId);
+    if (e instanceof ArmorStand as) {
+        return as;
     }
+    return null;
+}
 }

@@ -42,7 +42,7 @@ public class CreeperSpawnHandler extends BaseSpawnHandler {
         if (s == null) return;
 
         double mult = s.getDouble("speed-multiplier", 1.0);
-        var attr = creeper.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
+        var attr = creeper.getAttribute(org.bukkit.attribute.Attribute.MOVEMENT_SPEED);
         if (attr != null) {
             attr.setBaseValue(attr.getBaseValue() * mult);
         }
@@ -104,8 +104,8 @@ public class CreeperSpawnHandler extends BaseSpawnHandler {
 
     private void explodeCreeper(Creeper c, float power) {
         World w = c.getWorld();
-        if (Boolean.FALSE.equals(w.getGameRuleValue(GameRule.DO_MOB_GRIEFING))) {
-            w.setGameRule(GameRule.DO_MOB_GRIEFING, true);
+        if (Boolean.FALSE.equals(w.getGameRuleValue(GameRule.MOB_GRIEFING))) {
+            w.setGameRule(GameRule.MOB_GRIEFING, true);
         }
         w.createExplosion(c.getLocation(), power, false, true);
         c.remove();

@@ -4,9 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
@@ -43,14 +41,25 @@ public class TurretManager {
         return TURRETS.get(id);
     }
 
-    public static ArmorStand spawnTurret(Player player, TurretType type) {
+   public static ArmorStand spawnTurret(Player player, TurretType type) {
         Location loc = player.getLocation();
         ArmorStand stand = player.getWorld().spawn(loc, ArmorStand.class, as -> {
-            as.setVisible(false);
-            as.setMarker(true);
-            as.setGravity(false);
+            // ArmorStand ahora es visible y vulnerable
+            as.setVisible(true);           // Visible
+            as.setMarker(false);          // No es marker (puede ser golpeado)
+            as.setGravity(true);          // Tiene gravedad
+            as.setBasePlate(true);        // Muestra la base
+            as.setArms(false);            // Sin brazos por defecto
+            as.setSmall(true);           // Tamaño normal
+            
+            // Configuración de persistencia
             as.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, type.name());
+            
+            // Equipamiento visual
             as.getEquipment().setHelmet(new ItemStack(type.getBlock()));
+            
+            // Hacer que el ArmorStand sea menos frágil (opcional)
+            as.setHealth(20.0); // 10 corazones de vida
         });
 
         Turret turret = new Turret(stand.getUniqueId(), type);

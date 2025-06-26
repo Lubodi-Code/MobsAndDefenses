@@ -42,6 +42,6 @@ public class EndermanSpawnHandler implements Listener {
         player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, duration, amplifier), true);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, duration, amplifier), true);
 
-        player.getWorld().setGameRule(GameRule.DO_MOB_GRIEFING, true);
+        player.getWorld().setGameRule(GameRule.MOB_GRIEFING, true);
     }
 }
