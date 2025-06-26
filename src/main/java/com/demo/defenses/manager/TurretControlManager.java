@@ -13,12 +13,17 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.EulerAngle;
 
+import com.demo.managers.PluginManager;
+
 import com.demo.defenses.model.Turret;
 
 /**
  * Maneja el control activo de torretas por jugadores.
  */
 public class TurretControlManager {
+
+    // Referencia al plugin manager para obtener la instancia del plugin
+    private static final PluginManager PLUGIN_MANAGER = PluginManager.getInstance();
     
     // Mapa de jugadores controlando torretas: Player UUID -> Turret UUID
     private static final Map<UUID, UUID> ACTIVE_CONTROLLERS = new HashMap<>();
@@ -227,7 +232,7 @@ public class TurretControlManager {
             }
         };
         
-        updateTask.runTaskTimer(getPlugin(), 0L, 1L); // Actualizar cada tick
+        updateTask.runTaskTimer(PLUGIN_MANAGER.getPlugin(), 0L, 1L); // Actualizar cada tick
     }
     
     /**
@@ -313,12 +318,5 @@ public class TurretControlManager {
         stopUpdateTask();
     }
     
-    /**
-     * Obtiene la instancia del plugin (necesario para el scheduler)
-     */
-    private static org.bukkit.plugin.Plugin getPlugin() {
-        // Asumiendo que tu plugin se llama algo así, ajusta según tu clase principal
-        return Bukkit.getPluginManager().getPlugin("MobsAndDefenses");
-    }
 }
 
