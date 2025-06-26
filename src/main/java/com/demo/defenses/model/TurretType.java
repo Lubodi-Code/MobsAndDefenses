@@ -7,10 +7,10 @@ import org.bukkit.Material;
  */
 public enum TurretType {
     // Reduced reload times for faster firing
-    DISPENSER(Material.DISPENSER, 2_000L),
-    DROPPER(Material.DROPPER, 250L),
-    OBSERVER(Material.OBSERVER, 4_000L),
-    CRAFTER(Material.CRAFTER, 15_000L);
+    DISPENSER(Material.DISPENSER, 400L),
+    DROPPER(Material.DROPPER, 150L),
+    OBSERVER(Material.OBSERVER, 1_000L),
+    CRAFTER(Material.CRAFTER, 10_000L);
 
     private final Material block;
     private final long reloadTime;
