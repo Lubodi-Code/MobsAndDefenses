@@ -19,13 +19,19 @@ import org.bukkit.util.Vector;
 public class Turret {
     private final UUID standId;
     private final TurretType type;
+    private final Inventory inventory;
     private boolean active;
     private long lastShot;
 
-    public Turret(UUID standId, TurretType type) {
+    public Turret(UUID standId, TurretType type, Inventory inventory) {
         this.standId = standId;
         this.type = type;
+        this.inventory = inventory;
         this.active = false; // Inicialmente desactivada
+    }
+
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public UUID getStandId() {
@@ -68,10 +74,7 @@ public class Turret {
      * Verifica si hay munición en el inventario de la torreta
      */
     public boolean hasAmmo() {
-        ArmorStand stand = getArmorStand();
-        if (stand == null) return false;
-
-        Inventory inventory = stand.getInventory();
+        Inventory inventory = this.inventory;
         Material ammoType = getAmmoType();
         for (ItemStack item : inventory.getContents()) {
             if (item != null && item.getType() == ammoType && item.getAmount() > 0) {
@@ -85,10 +88,7 @@ public class Turret {
      * Consume una unidad de munición
      */
     private boolean consumeAmmo() {
-        ArmorStand stand = getArmorStand();
-        if (stand == null) return false;
-
-        Inventory inventory = stand.getInventory();
+        Inventory inventory = this.inventory;
         Material ammoType = getAmmoType();
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack item = inventory.getItem(i);
@@ -108,10 +108,7 @@ public class Turret {
      * Devuelve la munición restante en el inventario
      */
     public int getRemainingAmmo() {
-        ArmorStand stand = getArmorStand();
-        if (stand == null) return 0;
-
-        Inventory inventory = stand.getInventory();
+        Inventory inventory = this.inventory;
         Material ammoType = getAmmoType();
         int total = 0;
         for (ItemStack item : inventory.getContents()) {
