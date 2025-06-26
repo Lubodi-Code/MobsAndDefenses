@@ -1,0 +1,25 @@
+dificultades:
+  facil:
+    follow-range: 25
+    enchanted-bow: true
+    power-level: 1
+    allow-fire-arrows: false
+    allow-explosive-arrows: false
+    explosive-arrow-chance: 0.0
+    explosion-power: 2.0
+  normal:
+    follow-range: 35
+    enchanted-bow: true
+    power-level: 2
+    allow-fire-arrows: true
+    allow-explosive-arrows: true
+    explosive-arrow-chance: 0.1
+    explosion-power: 2.0
+  dificil:
+    follow-range: 45
+    enchanted-bow: true
+    power-level: 3
+    allow-fire-arrows: true
+    allow-explosive-arrows: true
+    explosive-arrow-chance: 0.2
+    explosion-power: 3.0

@@ -37,8 +37,9 @@ public class DifficultyManager {
         this.plugin = plugin;
         // Ensure default files are copied if not present
         plugin.saveResource("difficulty.yml", false);
-        // Copy example mob config
+        // Copy example mob configs
         plugin.saveResource("mobs/zombie.yml", false);
+        plugin.saveResource("mobs/skeleton.yml", false);
         reload();
     }
 
