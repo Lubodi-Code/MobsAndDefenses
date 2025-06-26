@@ -66,4 +66,17 @@ public class TurretManager {
         register(turret);
         return stand;
     }
+
+    /**
+     * Destruye la torreta y la elimina del registro
+     */
+    public static void destroyTurret(UUID id) {
+        Turret turret = TURRETS.remove(id);
+        if (turret != null) {
+            ArmorStand stand = turret.getArmorStand();
+            if (stand != null) {
+                stand.remove();
+            }
+        }
+    }
 }

@@ -13,6 +13,7 @@ import com.demo.mobs.spider.SpiderTrapHandler;
 import com.demo.mobs.wither.WitherBlastHandler;
 import com.demo.mobs.ghast.GhastHomingHandler;
 import com.demo.listeners.SunImmunityListener;
+import com.demo.defenses.manager.TurretControlManager;
 
 public class MobsAndDefenses extends JavaPlugin {
 
@@ -58,6 +59,7 @@ public class MobsAndDefenses extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        TurretControlManager.cleanup();
         getLogger().info("MobsAndDefenses has been disabled!");
     }
 }
