@@ -156,26 +156,35 @@ public class Turret {
             return;
         }
 
-        // Crear la flecha
-        Arrow arrow = stand.getWorld().spawnArrow(shootLocation, direction, 2.0f, 0.1f);
-        arrow.setShooter(stand);
+        double speed = 3.0; // projectiles travel faster now
 
-        // Configurar propiedades de la flecha según el tipo de torreta
         switch (type) {
-            case DISPENSER:
-                arrow.setDamage(4.0);
-                break;
-            case DROPPER:
-                arrow.setDamage(2.0);
-                break;
-            case OBSERVER:
-                arrow.setDamage(6.0);
-                arrow.setFireTicks(100);
-                break;
-            case CRAFTER:
-                arrow.setDamage(8.0);
-                arrow.setCritical(true);
-                break;
+            case DISPENSER -> {
+                Arrow arr = stand.getWorld().spawnArrow(shootLocation, direction, (float) speed, 0f);
+                arr.setShooter(stand);
+                arr.setDamage(4.0);
+            }
+            case DROPPER -> {
+                var stone = stand.getWorld().spawn(shootLocation, org.bukkit.entity.Snowball.class);
+                stone.setItem(new ItemStack(Material.COBBLESTONE));
+                stone.setShooter(stand);
+                stone.setVelocity(direction.multiply(speed));
+                stone.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 2.0));
+            }
+            case OBSERVER -> {
+                var fireball = stand.getWorld().spawn(shootLocation, org.bukkit.entity.SmallFireball.class);
+                fireball.setShooter(stand);
+                fireball.setDirection(direction);
+                fireball.setVelocity(direction.multiply(speed));
+                fireball.setIsIncendiary(true);
+                fireball.setMetadata("turret-damage", new org.bukkit.metadata.FixedMetadataValue(com.demo.managers.PluginManager.getInstance().getPlugin(), 6.0));
+            }
+            case CRAFTER -> {
+                Arrow laser = stand.getWorld().spawnArrow(shootLocation, direction, (float) speed, 0f);
+                laser.setShooter(stand);
+                laser.setDamage(10.0);
+                laser.setCritical(true);
+            }
         }
 
         // Actualizar tiempo del último disparo
@@ -187,7 +196,7 @@ public class Turret {
 
         // Efectos de sonido y visuales
         stand.getWorld().playSound(shootLocation, org.bukkit.Sound.ENTITY_ARROW_SHOOT, 1.0f, 1.0f);
-        
+
         // Efecto de partículas en la cabeza de la torreta
         stand.getWorld().spawnParticle(org.bukkit.Particle.SMOKE, shootLocation, 5, 0.1, 0.1, 0.1, 0.05);
     }
